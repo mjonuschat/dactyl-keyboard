@@ -3219,7 +3219,6 @@ external_start = list(
     )
 )
 
-# TODO: Check changes undercut/shape/offset
 def external_mount_hole():
     print('external_mount_hole()')
     shape = box(external_holder_width, 20.0, external_holder_height+.1)
