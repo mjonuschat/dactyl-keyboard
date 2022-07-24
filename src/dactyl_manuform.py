@@ -3275,7 +3275,7 @@ def pcb_usb_hole():
         (
             pcb_usb_position[0],
             pcb_usb_position[1],
-            pcb_usb_hole_size[2] / 2 + usb_holder_thickness,
+            pcb_usb_position[2],
         )
     )
     return shape

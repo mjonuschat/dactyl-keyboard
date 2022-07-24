@@ -403,7 +403,7 @@ shape_config = {
     "pcb_holder_offset": [8.9, 0, 0],
 
     "pcb_usb_hole_size": [7.5, 10.0, 4],
-    "pcb_usb_hole_offset": [15, 0, 4.5],
+    "pcb_usb_hole_offset": [15, 0, 6],
 
     "wall_thinner_size": [34, 7, 10],
 
