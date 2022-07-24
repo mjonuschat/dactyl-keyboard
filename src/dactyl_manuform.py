@@ -4152,9 +4152,9 @@ def baseplate(wedge_angle=None, side='right'):
         ])
 
         tool = translate(union(screw_insert_screw_holes(side=side)), [0, 0, -10])
-        # base = box(1000, 1000, .01)
+        base = box(1000, 1000, .01)
         shape = shape - tool
-        # shape = intersect(shape, base)
+        shape = intersect(shape, base)
 
         shape = translate(shape, [0, 0, -0.01])
 
