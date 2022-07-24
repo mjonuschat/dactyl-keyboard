@@ -346,7 +346,6 @@ def sa_cap(Usize=1):
     k2 = translate(k2, (0, 0, 12.0))
     if m > 0:
         m1 = polyline([(m, m), (m, -m), (-m, -m), (-m, m), (m, m)])
-        # m1 = cq.Wire.assembleEdges(m1.edges().objects)
         m1 = extrude_poly(outer_poly=m1, height=0.1)
         m1 = translate(m1, (0, 0, 6.0))
         key_cap = hull_from_shapes((k1, k2, m1))
@@ -354,7 +353,6 @@ def sa_cap(Usize=1):
         key_cap = hull_from_shapes((k1, k2))
 
     key_cap = translate(key_cap, (0, 0, 5 + plate_thickness))
-    # key_cap = key_cap.color((220 / 255, 163 / 255, 163 / 255, 1))
 
     if show_pcbs:
         key_cap = add([key_cap, key_pcb()])
