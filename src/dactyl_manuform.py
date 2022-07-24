@@ -3323,9 +3323,6 @@ def trrs_hole():
     trrs_position[1] = trrs_position[1] + trrs_offset[1]
     trrs_position[2] = trrs_position[2] + trrs_offset[2]
 
-    trrs_hole_size = [3, 20]
-
-
     shape = cylinder(*trrs_hole_size)
     shape = rotate(shape, [0, 90, 90])
     shape = translate(shape,
