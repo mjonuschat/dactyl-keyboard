@@ -41,7 +41,7 @@ shape_config = {
 
     'thumb_offsets':  [6, -3, 7],
     'keyboard_z_offset':  (
-        11  # controls overall height# original=9 with centercol=3# use 16 for centercol=2
+        13  # controls overall height# original=9 with centercol=3# use 16 for centercol=2
     ),
 
 
@@ -59,7 +59,7 @@ shape_config = {
     ##############################
 
     # 'DEFAULT' 6-key, 'MINI' 5-key, 'CARBONFET' 6-key, 'MINIDOX' 3-key, 'TRACKBALL_ORBYL', 'TRACKBALL_CJ'
-    'thumb_style': 'TRACKBALL_ORBYL',
+    'thumb_style': 'MINI',
     'default_1U_cluster': True, # only used with default, makes top right thumb cluster key 1U
     # Thumb key size.  May need slight oversizing, check w/ caps.  Additional spacing will be automatically added for larger keys.
     'minidox_Usize': 1.6,
@@ -244,7 +244,7 @@ shape_config = {
     'notch_width': 6.0, # If using notch, it is identical to undecut, but only locally by the switch clip
 
     'sa_profile_key_height':  12.7,
-    'sa_length': 18.5,
+    'sa_length': 18.25,
     'sa_double_length': 37.5,
     'plate_thickness':  4 + 1.1,
 
@@ -268,7 +268,7 @@ shape_config = {
     # 'SLIDING' = Features to slide the OLED in place and use a pin or block to secure from underneath.
     # 'CLIP' = Features to set the OLED in a frame a snap a bezel down to hold it in place.
 
-    'oled_mount_type':  'CLIP',
+    'oled_mount_type':  None,
     'oled_center_row': 1.25, # if not None, this will override the oled_mount_location_xyz and oled_mount_rotation_xyz settings
     'oled_translation_offset': (0, 0, 4), # Z offset tweaks are expected depending on curvature and OLED mount choice.
     'oled_rotation_offset': (0, 0, 0),
@@ -378,7 +378,7 @@ shape_config = {
     # 'USB_TEENSY' = Teensy holder, no RJ9
     # 'EXTERNAL' = square cutout for a holder such as the one from lolligagger.
     # 'NONE' = No openings in the back.
-    'controller_mount_type':  'EXTERNAL',
+    'controller_mount_type':  'PCB_MOUNT',
 
     'external_holder_height':  12.5,
     'external_holder_width':  28.75,
@@ -396,6 +396,7 @@ shape_config = {
 
     "pcb_usb_hole_size": [7.5, 10.0, 4],
     "pcb_usb_hole_offset": [15, 0, 4.5],
+    "pcb_usb_hole_z_offset": 2.5,
 
     "wall_thinner_size": [34, 7, 10],
 
@@ -428,7 +429,7 @@ shape_config = {
     'plate_holes_xy_offset': (0.0, 0.0),
     'plate_holes_width': 14.3,
     'plate_holes_height': 14.3,
-    'plate_holes_diameter': 1.6,
+    'plate_holes_diameter': 1.3,
     'plate_holes_depth': 20.0,
 
     ###################################

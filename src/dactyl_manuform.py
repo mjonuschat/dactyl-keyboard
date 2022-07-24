@@ -3841,12 +3841,12 @@ def thumb_screw_insert(bottom_radius, top_radius, height, offset=None, side='rig
 def screw_insert_all_shapes(bottom_radius, top_radius, height, offset=0, side='right'):
     print('screw_insert_all_shapes()')
     shape = (
-        translate(screw_insert(0, 0, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
-        translate(screw_insert(0, lastrow-1, bottom_radius, top_radius, height, side=side), (0, left_wall_lower_y_offset, offset)),
+        translate(screw_insert(0, 1, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
+        #translate(screw_insert(0, lastrow-1, bottom_radius, top_radius, height, side=side), (0, left_wall_lower_y_offset, offset)),
         translate(screw_insert(3, lastrow, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
         translate(screw_insert(3, 0, bottom_radius, top_radius, height, side=side), (0,0, offset)),
-        translate(screw_insert(lastcol, 0, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
-        translate(screw_insert(lastcol, lastrow-1, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
+        #translate(screw_insert(lastcol, 0, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
+        #translate(screw_insert(lastcol, lastrow-1, bottom_radius, top_radius, height, side=side), (0, 0, offset)),
         # translate(screw_insert_thumb(bottom_radius, top_radius, height), (0, 0, offset)),
     )
 
@@ -4109,7 +4109,7 @@ def baseplate(wedge_angle=None, side='right'):
 
 
 
-        shape = translate(shape, (0, 0, -0.0001))
+        shape = translate(shape, (0, 0, -0.01))
 
         square = cq.Workplane('XY').rect(1000, 1000)
         for wire in square.wires().objects:
@@ -4181,7 +4181,7 @@ def baseplate(wedge_angle=None, side='right'):
         shape = shape - tool
         shape = intersect(shape, base)
 
-        shape = translate(shape, [0, 0, -0.001])
+        shape = translate(shape, [0, 0, -0.01])
 
         return sl.projection(cut=True)(shape)
 
