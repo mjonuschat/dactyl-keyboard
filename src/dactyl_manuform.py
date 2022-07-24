@@ -1132,9 +1132,6 @@ def mini_thumbcaps():
 
 
 def mini_thumb(side="right"):
-
-    # shape = thumb_1x_layout(sl.rotate([0.0, 0.0, -90])(single_plate(side=side)))
-    # shape += thumb_15x_layout(sl.rotate([0.0, 0.0, -90])(single_plate(side=side)))
     shape = mini_thumb_1x_layout(single_plate(side=side))
     shape = union([shape, mini_thumb_15x_layout(single_plate(side=side))])
 
