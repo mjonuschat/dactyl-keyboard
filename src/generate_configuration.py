@@ -408,7 +408,7 @@ shape_config = {
     "wall_thinner_size": [34, 7, 10],
 
     "trrs_hole_size": [3, 20],
-    "trrs_offset": [0, 0, 1.5],
+    "trrs_offset": [0, 0, 7],
 
     "pcb_screw_hole_size": [.5, 10],
     "pcb_screw_x_offsets": [- 5.5, 7.75, 22], # for the screw positions off of reference

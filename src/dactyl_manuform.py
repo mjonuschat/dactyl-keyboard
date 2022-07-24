@@ -3332,7 +3332,7 @@ def trrs_hole():
         (
             trrs_position[0],
             trrs_position[1],
-            trrs_hole_size[0] + pcb_holder_thickness,
+            trrs_position[2],
         )
     )
     return shape
