@@ -1556,8 +1556,6 @@ def carbonfet_thumbcaps():
 
 
 def carbonfet_thumb(side="right"):
-    # shape = thumb_1x_layout(sl.rotate([0.0, 0.0, -90])(single_plate(side=side)))
-    # shape += thumb_15x_layout(sl.rotate([0.0, 0.0, -90])(single_plate(side=side)))
     shape = carbonfet_thumb_1x_layout(single_plate(side=side))
     shape = union([shape, carbonfet_thumb_15x_layout(double_plate_half(), plate=False)])
     shape = union([shape, carbonfet_thumb_15x_layout(single_plate(side=side))])
