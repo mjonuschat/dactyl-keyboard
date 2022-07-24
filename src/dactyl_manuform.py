@@ -174,15 +174,15 @@ def column_offset(column: int) -> list:
 def single_plate(cylinder_segments=100, side="right"):
 
     if plate_style in ['NUB', 'HS_NUB']:
-        top_wall = box(mount_width, 1.5, plate_thickness)
-        top_wall = translate(top_wall, (0, (1.5 / 2) + (keyswitch_height / 2), plate_thickness / 2))
+        tb_border = (mount_height-keyswitch_height)/2
+        top_wall = box(mount_width, tb_border, plate_thickness)
+        top_wall = translate(top_wall, (0, (tb_border / 2) + (keyswitch_height / 2), plate_thickness / 2))
 
-        left_wall = box(1.5, mount_height, plate_thickness)
-        left_wall = translate(left_wall, ((1.5 / 2) + (keyswitch_width / 2), 0, plate_thickness / 2))
+        lr_border = (mount_width - keyswitch_width) / 2
+        left_wall = box(lr_border, mount_height, plate_thickness)
+        left_wall = translate(left_wall, ((lr_border / 2) + (keyswitch_width / 2), 0, plate_thickness / 2))
 
         side_nub = cylinder(radius=1, height=2.75)
-        # TODO: Origin
-        side_nub = translate(side_nub, (0, 0, -2.75 / 2.0))
         side_nub = rotate(side_nub, (90, 0, 0))
         side_nub = translate(side_nub, (keyswitch_width / 2, 0, 1))
 
