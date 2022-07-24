@@ -616,19 +616,18 @@ def thumborigin():
 
 def default_thumb_tl_place(shape):
     debugprint('thumb_tl_place()')
-    shape = rotate(shape, [10, -23, 10])
+    shape = rotate(shape, [7.5, -18, 10])
     shape = translate(shape, thumborigin())
-    shape = translate(shape, [-32, -15, -2])
+    shape = translate(shape, [-32.5, -14.5, -2.5])
     return shape
 
 
 def default_thumb_tr_place(shape):
     debugprint('thumb_tr_place()')
-    shape = rotate(shape, [10, -23, 10])
+    shape = rotate(shape, [10, -15, 10])
     shape = translate(shape, thumborigin())
     shape = translate(shape, [-12, -16, 3])
     return shape
-
 
 def default_thumb_mr_place(shape):
     debugprint('thumb_mr_place()')
