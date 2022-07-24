@@ -3193,8 +3193,6 @@ def rj9_holder():
 usb_holder_position = key_position(
     list(np.array(wall_locate2(0, 1)) + np.array([0, (mount_height / 2), 0])), 1, 0
 )
-usb_holder_size = [6.5, 10.0, 13.6]
-usb_holder_thickness = 4
 
 
 def usb_holder():

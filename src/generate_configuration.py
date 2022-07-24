@@ -392,6 +392,9 @@ shape_config = {
 
     # Offset is from the top inner corner of the top inner key.
 
+    "usb_holder_size": [6.5, 10.0, 13.6],
+    "usb_holder_thickness": 4,
+
     ###################################
     ## PCB Screw Mount               ##
     ###################################
