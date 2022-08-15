@@ -181,3 +181,7 @@ class WallModel(AbstractWallComponent, ABC):
 
 class BackWallModel(WallModel, ABC):
     ...
+
+
+class FrontWallModel(WallModel, ABC):
+    ...
