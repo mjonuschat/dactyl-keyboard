@@ -177,3 +177,7 @@ class WallModel(AbstractWallComponent, ABC):
     @abstractmethod
     def render(self, side: Side = Side.RIGHT, skeleton: bool = False) -> Shape:
         ...
+
+
+class BackWallModel(WallModel, ABC):
+    ...
