@@ -13,19 +13,30 @@ Shapes = t.Sequence[Shape]
 
 
 class ControllerMount(str, Enum):
+    # No openings in the back
     NONE = "NONE"
+    # Standard internal plate with a square cutout for connection, no RJ9.
     USB_WALL = "USB_WALL"
+    # Standard internal plate with RJ9 opening and square cutout for connection.
     RJ9_USB_WALL = "RJ9_USB_WALL"
+    # Teensy holder, no RJ9
     USB_TEENSY = "USB_TEENSY"
+    # Teensy holder
     RJ9_USB_TEENSY = "RJ9_USB_TEENSY"
+    # square cutout for a holder such as the one from lolligagger
     EXTERNAL = "EXTERNAL"
+    # PCB based controller mount
     PCB_MOUNT = "PCB_MOUNT"
 
 
 class OledMount(str, Enum):
+    # No OLED mount
     NONE = "NONE"
+    # Features to set the OLED in a frame a snap a bezel down to hold it in place.
     CLIP = "CLIP"
+    # Features to slide the OLED in place and use a pin or block to secure from underneath.
     SLIDING = "SLIDING"
+    # Simple rectangle with undercut for clip in item
     UNDERCUT = "UNDERCUT"
 
 
@@ -36,7 +47,9 @@ class ScrewOffset(str, Enum):
 
 
 class RenderEngine(str, Enum):
+    # SolidPython / OpenSCAD
     SOLID = "solid"
+    # CadQuery / OpenCascade
     CADQUERY = "cadquery"
 
 
@@ -53,12 +66,21 @@ class ColumnStyle(str, Enum):
 
 
 class PlateStyle(str, Enum):
+    # original side nubs.
     NUB = "NUB"
+    # hot swap underside with nubs.
     HS_NUB = "HS_NUB"
+    # snap fit undercut only near switch clip.
+    # May require CLIP_THICKNESS and possibly CLIP_UNDERCUT tweaking and/or filing to get proper snap.
     NOTCH = "NOTCH"
+    # hot swap underside with notch.  Does not generate properly.  Hot swap step needs to be modified.
     HS_NOTCH = "HS_NOTCH"
+    # snap fit undercut.
+    # May require CLIP_THICKNESS and possibly CLIP_UNDERCUT tweaking and/or filing to get proper snap.
     UNDERCUT = "UNDERCUT"
+    # hot swap underside with undercut. Does not generate properly. Hot swap step needs to be modified.
     HS_UNDERCUT = "HS_UNDERCUT"
+    # a square hole.  Also useful for applying custom plate files.
     HOLE = "HOLE"
 
 
