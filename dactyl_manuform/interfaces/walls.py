@@ -412,3 +412,285 @@ class ControllerMountModel(AbstractWallComponent, ABC):
     @abstractmethod
     def apply(self, shape: Shape) -> Shape:
         ...
+
+
+class ThumbClusterWallModel(WallModel, ABC):
+    def __init__(
+        self,
+        config: DactylManuformConfig,
+        engine: Engine,
+        log: Logger,
+        properties: DactylManuformProperties,
+        thumb_properties: ThumbClusterProperties,
+        placement: KeyPlacementTransformer,
+        connectors: ConnectorComponent,
+        single_plate: SinglePlateComponent,
+        key_caps: KeycapModel,
+        plate_pcb_cutouts: PcbCutoutModel,
+        screw_inserts: ScrewInsertModel,
+        trackball_components: TrackballPartsComponent,
+    ) -> None:
+        super().__init__(
+            config=config,
+            engine=engine,
+            log=log,
+            properties=properties,
+            connectors=connectors,
+            placement=placement,
+        )
+
+        self.thumb_properties = thumb_properties
+        self.web_connectors = connectors
+        self.single_plate = single_plate
+        self.key_caps = key_caps
+        self.plate_cutout = plate_pcb_cutouts
+        self.screw_insert = screw_inserts
+        self.components = trackball_components
+
+    @property
+    def has_trackball(self) -> bool:
+        return False
+
+    @property
+    def separable_thumb(self) -> bool:
+        return self.config.separable_thumb
+
+    @property
+    def double_plate_height(self) -> float:
+        return (self.config.sa_double_length - self.properties.mount_height) / 3
+
+    @property
+    def double_plate(self) -> Shape:
+        self.log.debug("double_plate()")
+        top_plate = self.double_plate_half
+        return self.engine.union((top_plate, self.engine.mirror(top_plate, "XZ")))
+
+    @property
+    def double_plate_half(self):
+        self.log.debug("double_plate_half()")
+        top_plate = self.engine.box(
+            self.properties.mount_width, self.double_plate_height, self.web_thickness
+        )
+        top_plate = self.engine.translate(
+            top_plate,
+            (
+                0,
+                (self.double_plate_height + self.properties.mount_height) / 2,
+                self.properties.plate_thickness - (self.web_thickness / 2),
+            ),
+        )
+        return top_plate
+
+    @property
+    def plate_rotation_tl(self) -> float:
+        return self.config.thumb_plate_tl_rotation
+
+    @property
+    def plate_rotation_tr(self) -> float:
+        return self.config.thumb_plate_tr_rotation
+
+    @property
+    def plate_rotation_ml(self) -> float:
+        return self.config.thumb_plate_ml_rotation
+
+    @property
+    def plate_rotation_mr(self) -> float:
+        return self.config.thumb_plate_mr_rotation
+
+    @property
+    def plate_rotation_bl(self) -> float:
+        return self.config.thumb_plate_bl_rotation
+
+    @property
+    def plate_rotation_br(self) -> float:
+        return self.config.thumb_plate_br_rotation
+
+    @property
+    def thumb_offsets(self) -> XYZ:
+        return self.thumb_properties.offsets
+
+    @property
+    def thumb_origin(self) -> XYZ:
+        return self.thumb_properties.origin
+
+    @property
+    def web_thickness(self) -> float:
+        return self.config.web_thickness
+
+    @property
+    def post_adj(self) -> float:
+        return self.web_connectors.post_adj
+
+    def cutout(self, side: Side = Side.RIGHT) -> Shape:
+        return self.plate_cutout.cutout(side=side)
+
+    def insert(
+        self,
+        bottom_radius: float,
+        top_radius: float,
+        height: float,
+        offset: float = 0.0,
+        side: Side = Side.RIGHT,
+    ):
+        shape = self.screw_insert.shape(
+            bottom_radius=bottom_radius, top_radius=top_radius, height=height
+        )
+        shapes = []
+        origin = self.thumb_origin
+        xy_positions = self.screw_xy_positions
+        if self.separable_thumb:
+            xy_positions = self.screw_xy_positions_separable
+
+        for xy_position in xy_positions:
+            position = list(np.array(origin) + np.array([*xy_position, -origin[2]]))
+            shapes.append(
+                self.engine.translate(
+                    shape, (position[0], position[1], height / 2 + offset)
+                )
+            )
+
+        return shapes
+
+    def outers(self, offset: float = 0.0, side: Side = Side.RIGHT) -> t.List[Shape]:
+        return self.insert(
+            bottom_radius=self.screw_insert.outer_radius,
+            top_radius=self.screw_insert.outer_radius,
+            height=self.screw_insert.height + 1.5,
+            offset=offset,
+            side=side,
+        )
+
+    def holes(self, side: Side = Side.RIGHT) -> Shape:
+        return self.insert(
+            bottom_radius=self.screw_insert.bottom_radius,
+            top_radius=self.screw_insert.top_radius,
+            height=self.screw_insert.height + 0.02,
+            offset=-0.01,
+            side=side,
+        )
+
+    def adjustable_square_plate(self, key_width: float = 1.5, key_height: float = 1.5):
+        width = self.properties.key_dimension(key_size=key_width)
+        height = self.properties.key_dimension(key_size=key_height)
+
+        self.log.info(
+            "width: %f, height: %f, thickness: %f", width, height, self.web_thickness
+        )
+
+        shape = self.engine.box(width, height, self.web_thickness)
+        shape = self.engine.difference(
+            shape,
+            [
+                self.engine.box(
+                    self.properties.mount_width - 0.01,
+                    self.properties.mount_height - 0.01,
+                    2 * self.web_thickness,
+                )
+            ],
+        )
+        shape = self.engine.translate(shape, (0, 0, self.web_thickness / 2))
+        return shape
+
+    def adjustable_plate_half(self, key_size: float = 1.5) -> Shape:
+        self.log.debug("adjustable_plate_half()")
+
+        adjustable_plate_height = self.properties.adjustable_plate_size(key_size)
+        top_plate = self.engine.box(
+            self.properties.mount_width, adjustable_plate_height, self.web_thickness
+        )
+        top_plate = self.engine.translate(
+            top_plate,
+            (
+                0,
+                (adjustable_plate_height + self.properties.mount_height) / 2,
+                self.properties.plate_thickness - (self.web_thickness / 2),
+            ),
+        )
+        return top_plate
+
+    def adjustable_plate(self, key_size: float = 1.5) -> Shape:
+        self.log.debug("adjustable_plate()")
+        top_plate = self.adjustable_plate_half(key_size)
+
+        return self.engine.union((top_plate, self.engine.mirror(top_plate, "XZ")))
+
+    @property
+    @abstractmethod
+    def screw_xy_positions_separable(self) -> t.Tuple[XY, ...]:
+        ...
+
+    @property
+    @abstractmethod
+    def screw_xy_positions(self) -> t.Tuple[XY, ...]:
+        ...
+
+    @abstractmethod
+    def post_tl(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def post_tr(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def post_bl(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def post_br(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_tl(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_tr(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_ml(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_mr(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_bl(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def place_br(self, shape: Shape) -> Shape:
+        ...
+
+    @abstractmethod
+    def layout_1x(self, shape: Shape, cap: bool = False) -> Shape:
+        ...
+
+    @abstractmethod
+    def layout_15x(self, shape: Shape, cap: bool = False, plate: bool = True) -> Shape:
+        ...
+
+    @abstractmethod
+    def connection(self, side: Side = Side.RIGHT) -> Shape:
+        ...
+
+    @abstractmethod
+    def thumb_connectors(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def caps(self) -> Shape:
+        ...
+
+    @abstractmethod
+    def walls(self, side: Side = Side.RIGHT, skeleton: bool = False) -> Shape:
+        ...
+
+    @abstractmethod
+    def pcb_plate_cutouts(self, side: Side = Side.RIGHT):
+        ...
+
+    def trackball_components(self) -> TrackballComponents:
+        raise RuntimeError("This thumb cluster has no trackball")

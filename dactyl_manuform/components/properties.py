@@ -144,6 +144,7 @@ class DactylManuformProperties:
     def key_dimension(self, key_size: float = 1.5) -> float:
         return key_size * self.config.sa_length
 
+    # TODO: This should move into the thumb cluster rendering - they know if they have a TB
     def has_trackball(self, side: Side = Side.RIGHT) -> bool:
         return self.thumb_style in [
             ThumbStyle.TRACKBALL_CJ,
