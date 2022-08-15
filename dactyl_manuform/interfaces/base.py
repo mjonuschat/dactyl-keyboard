@@ -30,6 +30,10 @@ class AbstractComponentClass(ABC):
         return rad * 180 / math.pi
 
 
+class BaseTransformer(AbstractComponentClass, ABC):
+    ...
+
+
 class BaseComponent(AbstractComponentClass, ABC):
     @abstractmethod
     def render(self, side: Side = Side.RIGHT) -> Shape:
