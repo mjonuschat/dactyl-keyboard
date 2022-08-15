@@ -406,3 +406,9 @@ class ScrewInsertModel(WallModel, ABC):
         )
 
         return shape
+
+
+class ControllerMountModel(AbstractWallComponent, ABC):
+    @abstractmethod
+    def apply(self, shape: Shape) -> Shape:
+        ...
