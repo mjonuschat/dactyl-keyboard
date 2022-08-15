@@ -189,3 +189,7 @@ class FrontWallModel(WallModel, ABC):
 
 class LeftWallModel(WallModel, ABC):
     ...
+
+
+class RightWallModel(WallModel, ABC):
+    ...
