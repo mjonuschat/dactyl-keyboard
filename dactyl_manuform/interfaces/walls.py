@@ -185,3 +185,7 @@ class BackWallModel(WallModel, ABC):
 
 class FrontWallModel(WallModel, ABC):
     ...
+
+
+class LeftWallModel(WallModel, ABC):
+    ...
