@@ -193,3 +193,216 @@ class LeftWallModel(WallModel, ABC):
 
 class RightWallModel(WallModel, ABC):
     ...
+
+
+class ScrewInsertModel(WallModel, ABC):
+    @property
+    def oled_config(self) -> t.Optional[OledMountConfiguration]:
+        if self.config.oled_mount_type is OledMount.NONE:
+            return
+
+        return OledMountConfiguration.parse_obj(
+            self.config.oled_configurations[self.config.oled_mount_type]
+        )
+
+    @property
+    def left_wall_lower_y_offset(self) -> float:
+        offset = self.config.left_wall_lower_y_offset
+        if oled_config := self.oled_config:
+            offset = oled_config.left_wall_lower_y_offset
+
+        return offset
+
+    @property
+    def outer_radius(self) -> float:
+        return self.config.screw_insert_outer_radius
+
+    @property
+    def bottom_radius(self) -> float:
+        return self.config.screw_insert_bottom_radius
+
+    @property
+    def top_radius(self) -> float:
+        return self.config.screw_insert_top_radius
+
+    @property
+    def height(self) -> float:
+        return self.config.screw_insert_height
+
+    @abstractmethod
+    def shift(self, column: int, row: int) -> ShiftValues:
+        ...
+
+    def render(self, side: Side = Side.RIGHT, skeleton: bool = False) -> Shape:
+        raise RuntimeError("Calling render() on a screw insert is not supported.")
+
+    def shape(self, bottom_radius: float, top_radius: float, height: float) -> Shape:
+        self.log.debug("screw_insert_shape()")
+        if bottom_radius == top_radius:
+            base = self.engine.cylinder(radius=bottom_radius, height=height)
+        else:
+            base = self.engine.translate(
+                self.engine.cone(r1=bottom_radius, r2=top_radius, height=height),
+                (0, 0, -height / 2),
+            )
+
+        shape = self.engine.union(
+            (
+                base,
+                self.engine.translate(
+                    self.engine.sphere(top_radius), (0, 0, height / 2)
+                ),
+            )
+        )
+        return shape
+
+    def insert(
+        self,
+        column: int,
+        row: int,
+        bottom_radius: float,
+        top_radius: float,
+        height: float,
+        side: Side = Side.RIGHT,
+    ):
+        shift = self.shift(column=column, row=row)
+
+        if shift.up:
+            position = self.placement.key_position(
+                list(
+                    np.array(self.wall_locate2(0, 1))
+                    + np.array(
+                        [
+                            0,
+                            (self.properties.mount_height / 2) + shift.up_adjust,
+                            0,
+                        ]
+                    )
+                ),
+                column,
+                row,
+            )
+        elif shift.down:
+            position = self.placement.key_position(
+                list(
+                    np.array(self.wall_locate2(0, -1))
+                    - np.array(
+                        [
+                            0,
+                            (self.properties.mount_height / 2) + shift.down_adjust,
+                            0,
+                        ]
+                    )
+                ),
+                column,
+                row,
+            )
+        elif shift.left:
+            position = list(
+                np.array(self.placement.left_key_position(row, 0, side=side))
+                + np.array(self.wall_locate3(-1, 0))
+                + np.array((shift.left_adjust, 0, 0))
+            )
+        else:
+            position = self.placement.key_position(
+                list(
+                    np.array(self.wall_locate2(1, 0))
+                    + np.array([(self.properties.mount_height / 2), 0, 0])
+                    + np.array((shift.right_adjust, 0, 0))
+                ),
+                column,
+                row,
+            )
+
+        shape = self.shape(bottom_radius, top_radius, height)
+        shape = self.engine.translate(shape, (position[0], position[1], height / 2))
+
+        return shape
+
+    def outers(self, offset: float = 0.0, side: Side = Side.RIGHT) -> Shape:
+        return self.all_shapes(
+            bottom_radius=self.outer_radius,
+            top_radius=self.outer_radius,
+            height=self.height + 1.5,
+            offset=offset,
+            side=side,
+        )
+
+    def holes(self, side: Side = Side.RIGHT) -> Shape:
+        return self.all_shapes(
+            bottom_radius=self.bottom_radius,
+            top_radius=self.top_radius,
+            height=self.height + 0.02,
+            offset=-0.01,
+            side=side,
+        )
+
+    def screw_holes(self, side: Side = Side.RIGHT) -> Shape:
+        return self.all_shapes(bottom_radius=1.7, top_radius=1.7, height=350, side=side)
+
+    def all_shapes(
+        self,
+        bottom_radius: float,
+        top_radius: float,
+        height: float,
+        offset: float = 0.0,
+        side: Side = Side.RIGHT,
+    ) -> Shape:
+        self.log.debug("screw_insert_all_shapes()")
+
+        shape = (
+            self.engine.translate(
+                self.insert(0, 0, bottom_radius, top_radius, height, side=side),
+                (0, 0, offset),
+            ),
+            self.engine.translate(
+                self.insert(
+                    0,
+                    self.properties.cornerrow,
+                    bottom_radius,
+                    top_radius,
+                    height,
+                    side=side,
+                ),
+                (0, self.left_wall_lower_y_offset, offset),
+            ),
+            self.engine.translate(
+                self.insert(
+                    3,
+                    self.properties.lastrow,
+                    bottom_radius,
+                    top_radius,
+                    height,
+                    side=side,
+                ),
+                (0, 0, offset),
+            ),
+            self.engine.translate(
+                self.insert(3, 0, bottom_radius, top_radius, height, side=side),
+                (0, 0, offset),
+            ),
+            self.engine.translate(
+                self.insert(
+                    self.properties.lastcol,
+                    0,
+                    bottom_radius,
+                    top_radius,
+                    height,
+                    side=side,
+                ),
+                (0, 0, offset),
+            ),
+            self.engine.translate(
+                self.insert(
+                    self.properties.lastcol,
+                    self.properties.cornerrow,
+                    bottom_radius,
+                    top_radius,
+                    height,
+                    side=side,
+                ),
+                (0, 0, offset),
+            ),
+        )
+
+        return shape
